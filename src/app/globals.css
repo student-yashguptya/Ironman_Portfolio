@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0b;
+  --foreground: #e4e4e7;
+  --muted: #71717a;
+  --accent: #d4a22f;
+  --accent-soft: rgba(212, 162, 47, 0.14);
+  --card-bg: rgba(24, 24, 27, 0.55);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --hud-line: rgba(255, 255, 255, 0.1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+}
+
+.card-surface {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 20px 40px -20px rgba(0, 0, 0, 0.6);
+}
+
+.scroll-animation {
+  height: 400vh;
+}
+
+@media (max-width: 1024px) {
+  .scroll-animation {
+    height: 350vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .scroll-animation {
+    height: 300vh;
+  }
+}
+
+.hud-tick {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0 calc(100% - 1px),
+    var(--hud-line) calc(100% - 1px) 100%
+  );
+  background-size: 16px 100%;
+}
+
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* --- Project card (preserves fan stack + hover) ------------------ */
+.project-glass-card {
+  position: relative;
+  background: linear-gradient(#fff2, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 25px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: rotate(var(--card-rotate, 0deg));
+  transform-origin: center;
+  transition:
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease,
+    margin 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Project card image zoom ------------------------------------- */
+.project-card-image-wrap {
+  overflow: hidden;
+}
+
+.project-card-image-wrap img {
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-glass-card:hover .project-card-image-wrap img {
+  transform: scale(1.07);
+}
+
+.project-card-media::before {
+  content: attr(data-text);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(7, 16, 38, 0.6);
+  color: #fff;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 1;
+}
+
+/* --- Skills rotator ----------------------------------------------- */
+.skills-rotator {
+  position: relative;
+  height: 640px;
+}
+
+.skills-rotator .wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.skills-rotator .inner {
+  --w: 170px;
+  --h: 220px;
+  --translateZ: calc((var(--w) + var(--h)) + 180px);
+  --rotateX: -15deg;
+  --perspective: 1450px;
+  position: absolute;
+  width: var(--w);
+  height: var(--h);
+  top: 45%;
+  left: calc(50% - (var(--w) / 2));
+  z-index: 2;
+  transform-style: preserve-3d;
+  transform: perspective(var(--perspective)) rotateX(var(--rotateX))
+    translateY(-50%);
+  animation: skills-rotating 20s linear infinite;
+}
+
+@keyframes skills-rotating {
+  from {
+    transform: perspective(var(--perspective)) rotateX(var(--rotateX))
+      translateY(-50%) rotateY(0);
+  }
+  to {
+    transform: perspective(var(--perspective)) rotateX(var(--rotateX))
+      translateY(-50%) rotateY(1turn);
+  }
+}
+
+.skills-rotator .card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(var(--color-card), 0.75);
+  transform: rotateY(calc((360deg / var(--quantity)) * var(--index)))
+    translateZ(var(--translateZ));
+  box-shadow:
+    0 18px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.skills-rotator .img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background:
+    linear-gradient(165deg, rgba(7, 16, 38, 0.8), rgba(2, 9, 22, 0.9)),
+    radial-gradient(
+      circle,
+      rgba(var(--color-card), 0.2) 0%,
+      rgba(var(--color-card), 0.45) 75%,
+      rgba(var(--color-card), 0.65) 100%
+    );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.skills-rotator .img span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+  .skills-rotator {
+    height: 520px;
+  }
+
+  .skills-rotator .inner {
+    --w: 130px;
+    --h: 170px;
+    --translateZ: calc((var(--w) + var(--h)) + 120px);
+    --perspective: 1200px;
+  }
+
+  .skills-rotator .img span {
+    font-size: 0.8rem;
+    padding-inline: 0.4rem;
+  }
+}
+
+
+/* --- Button shimmer sweep ---------------------------------------- */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(0, 0, 0, 0.07) 50%,
+    transparent 80%
+  );
+  transform: skewX(-18deg);
+}
+
+.btn-shimmer:hover::after {
+  left: 160%;
+  transition: left 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-shimmer-light::after {
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 80%
+  );
+}
+
+
+/* --- Stacked Card Architecture ----------------------------------- */
+
+.sticky-stack-container {
+  position: relative;
+  width: 100%;
+}
+
+.sticky-card {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 100vh;
+  background-color: var(--background);
+  will-change: transform;
+}
+
+/* ONLY About Section card gets a deep, beautifully uniform curved top */
+.about-card {
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .about-card {
+    border-top-left-radius: 100px;
+    border-top-right-radius: 100px;
+  }
+}
+
