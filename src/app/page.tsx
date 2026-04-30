@@ -6,8 +6,7 @@ import { Company } from "@/components/sections/Company";
 import { Experience } from "@/components/sections/Experience";
 import { SystemsNominal } from "@/components/sections/SystemsNominal";
 import { Projects } from "@/components/sections/Projects";
-import { Achievements } from "@/components/sections/Achievements";
-import { Certifications } from "@/components/sections/Certifications";
+
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
 import { StickyStack } from "@/components/ui/StickyStack";
@@ -46,14 +45,7 @@ export default function Home() {
             <Projects />
           </div>
           
-          <div className="sticky-card bg-background relative z-[4]">
-            <Achievements />
-          </div>
-          
-          <div className="sticky-card bg-background relative z-[3]">
-            <Certifications />
-          </div>
-          
+
           <div className="sticky-card bg-background relative z-[1]">
             <Contact />
           </div>
